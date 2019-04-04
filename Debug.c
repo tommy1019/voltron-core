@@ -20,7 +20,7 @@ void createDebugPipe(void)
         }
     }
 
-    debugPipe = open(DEBUG_PIPE_NAME, O_WRONLY);
+    debugPipe = open(DEBUG_PIPE_NAME, O_RDWR);
     printf("Debug pipe open\n");
 }
 

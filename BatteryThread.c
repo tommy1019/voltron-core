@@ -25,7 +25,7 @@ void* batteryThread(void* args)
 
     while (1)
     {
-        int batteryPipe = open(BATTERY_PIPE_NAME, O_WRONLY);
+        int batteryPipe = open(BATTERY_PIPE_NAME, O_RDWR);
         printf("Battery pipe open\n");
 
         while (1)
