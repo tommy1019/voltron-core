@@ -26,10 +26,7 @@ int main(int argc, char** argv)
 {
     //See random
     srand(time(0));
-
-    //Ignore pipe failures
-    sigaction(SIGPIPE, &(struct sigaction){SIG_IGN}, NULL);
-
+    
     createDebugPipe();
 
     startThread(&batteryThreadId, batteryThread, "Battery");

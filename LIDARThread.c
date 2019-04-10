@@ -74,9 +74,12 @@ void* lidarThread(void* args)
     printf("[LIDAR] Created and mapped shared memory\n");
 
     float angles[16] = { -15, 1, -13, -3, -11, 5, -9, 7, -7, 9, -5, 11, -3, 13, -1, 15 };
+    float cosAng[16];
+    float sinAng[16];
     for (int i = 0; i < LASER_NUM; i++)
     {
-        angles[i] = angles[i] * M_PI / 180.0;
+        cosAng[i] = cos(angles[i] * M_PI / 180.0);
+        sinAng[i] = sin(angles[i] * M_PI / 180.0);
     }
 
     int soc = socket(AF_INET, SOCK_DGRAM, 0);
@@ -98,6 +101,9 @@ void* lidarThread(void* args)
         exit(EXIT_FAILURE);
     }
 
+    int curBlock = 0;
+    int curPoint = 0;
+
     while(1)
     {
         struct Packet packet;
@@ -105,7 +111,7 @@ void* lidarThread(void* args)
         int length = 0;
         length = recv(soc, &packet, sizeof(struct Packet), MSG_WAITALL);
 
-        if (length != sizeof(struct Packet))
+        if (length != sizeof(struct Packet) && length != 512)
         {
             printf("Error: Incorrect packet size: %i should be %lu\n", length, sizeof(struct Packet));
 
@@ -113,6 +119,41 @@ void* lidarThread(void* args)
                 break;
 
             continue;
+        }
+
+        for (int i = 0; i < 12; i++)
+        {
+            float azim = (float)(packet.dataBlocks[i].azimuth) / 100.0 * M_PI / 180.0;
+            float cosa = cos(azim);
+            float sina = sin(azim);
+
+            for (int j = 0; j < 32; j++)
+            {
+                float dist = (float)(packet.dataBlocks[i].channelData[i].distance) * 2.0 / 10000.0;
+                float x, y, z, r;
+
+                x = dist * cosAng[i] * cosa;
+                y = dist * cosAng[i] * sina;
+                z = dist * sinAng[i];
+                r = packet.dataBlocks[i].channelData[i].reflectivity;
+
+                memoryRegions[curBlock].point[curPoint].x = x;
+                memoryRegions[curBlock].point[curPoint].y = y;
+                memoryRegions[curBlock].point[curPoint].z = z;
+                memoryRegions[curBlock].point[curPoint].reflectivity = r;
+
+                curPoint++;
+            }
+        }
+
+        if (curPoint >= LIDAR_DATA_NUM_POINTS)
+        {
+            curPoint = 0;
+            curBlock++;
+            if (curBlock >= LIDAR_DATA_NUM_REGIONS)
+                curBlock = 0;
+            //printf("[LIDAR] Completed block\n");
+            //TODO: Send notification over udp
         }
     }
 
