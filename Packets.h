@@ -1,8 +1,13 @@
 #ifndef PACKETS_H
 #define PACKETS_H
 
-#define BATTERY_PIPE_NAME "/tmp/voltron_battery"
-#define DEBUG_PIPE_NAME "/tmp/voltron_debug"
+#define DEBUG_PORT 12000
+#define BATTERY_PORT 12001
+
+struct DebugPacket
+{
+    int strLength;
+};
 
 struct BatteryPacket
 {
@@ -11,10 +16,6 @@ struct BatteryPacket
     float charge;
 };
 
-struct DebugPacket
-{
-    int strLength;
-};
 
 #define LIDAR_MEMORY_NAME "/tmp/voltron_lidar_data"
 

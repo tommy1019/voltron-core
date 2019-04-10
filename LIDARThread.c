@@ -8,8 +8,9 @@
 #include <sys/mman.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
+#include <math.h>
+#include <string.h>
 
-#include "Pipes.h"
 #include "Packets.h"
 
 struct Channel
@@ -99,14 +100,14 @@ void* lidarThread(void* args)
 
     while(1)
     {
-        Packet packet;
+        struct Packet packet;
 
         int length = 0;
-        length = recv(soc, &packet, sizeof(Packet), MSG_WAITALL);
+        length = recv(soc, &packet, sizeof(struct Packet), MSG_WAITALL);
 
-        if (length != sizeof(Packet))
+        if (length != sizeof(struct Packet))
         {
-            printf("Error: Incorrect packet size: %i should be %lu\n", length, sizeof(Packet));
+            printf("Error: Incorrect packet size: %i should be %lu\n", length, sizeof(struct Packet));
 
             if (length == 27)
                 break;

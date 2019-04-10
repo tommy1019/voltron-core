@@ -1,7 +1,7 @@
 #ifndef DEBUG_H
 #define DEBUG_H
 
-int debugPipe;
+int debugSock;
 
 void createDebugPipe(void);
 
