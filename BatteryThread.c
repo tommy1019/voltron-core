@@ -19,42 +19,38 @@ void* batteryThread(void* args)
     {
         if (errno != EEXIST)
         {
-            printf("Error: Could not create battery pipe.\n");
+            printf("[Battery] Error: Could not create battery pipe.\n");
         }
     }
+
+    int batteryPipe = open(BATTERY_PIPE_NAME, O_RDWR);
+    printf("[Battery] Pipe open\n");
 
     while (1)
     {
-        int batteryPipe = open(BATTERY_PIPE_NAME, O_RDWR);
-        printf("Battery pipe open\n");
+        struct BatteryPacket pkt;
 
-        while (1)
+        pkt.cellNum = rand() % 20;
+        pkt.charge = rand() % 100 / 100.0;
+
+        if (write(batteryPipe, &pkt, sizeof(struct BatteryPacket)) == -1)
         {
-            struct BatteryPacket pkt;
-
-            pkt.cellNum = rand() % 20;
-            pkt.charge = rand() % 100 / 100.0;
-
-            if (write(batteryPipe, &pkt, sizeof(struct BatteryPacket)) == -1)
+            if (errno == EPIPE)
             {
-                if (errno == EPIPE)
-                {
-                    printf("Error: Battery pipe closed\n");
-                    break;
-                }
-                else
-                {
-                    printf("Error: Battery write failed\n");
-                    return NULL;
-                }
+                printf("[Battery] Error: Battery pipe closed\n");
+                break;
             }
-
-            usleep(2000);
+            else
+            {
+                printf("[Battery] Error: Battery write failed\n");
+                break;
+            }
         }
 
-        close(batteryPipe);
+        usleep(2000);
     }
 
+    close(batteryPipe);
 
     return NULL;
 }

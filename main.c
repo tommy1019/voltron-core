@@ -6,11 +6,21 @@
 #include "Defines.h"
 
 #include "BatteryThread.h"
+#include "LIDARThread.h"
 #include "Debug.h"
 
 #ifdef CAN_THREAD
 #include "CANReaderThread.h"
 #endif
+
+void startThread(pthread_t* threadId, void* function, char* name)
+{
+    printf("Starting %s thread\n", name);
+    if (pthread_create(threadId, NULL, function, NULL) != 0)
+    {
+        printf("Error: Could not create %s thread\n", name);
+    }
+}
 
 int main(int argc, char** argv)
 {
@@ -20,29 +30,20 @@ int main(int argc, char** argv)
     //Ignore pipe failures
     sigaction(SIGPIPE, &(struct sigaction){SIG_IGN}, NULL);
 
-    printf("Starting battery thread\n");
-    if (pthread_create(&batteryThreadId, NULL, batteryThread, NULL) != 0)
-    {
-        printf("Error: Could not create thread\n");
-    }
+    createDebugPipe();
+
+    startThread(&batteryThreadId, batteryThread, "Battery");
+    startThread(&lidarThreadId, lidarThread, "LIDAR");
 
     #ifdef CAN_THREAD
-    printf("Starting CAN thread\n");
-    if (pthread_create(&canReaderThreadId, NULL, canReaderThread, NULL) != 0)
-    {
-        printf("Error: Could not create thread\n");
-    }
+    startThread(&canReaderThreadId, canReaderThread, "CAN Reader");
     #endif
 
-    createDebugPipe();
-    writeDebugMessage("Hello World\n");
-
     pthread_join(batteryThreadId, NULL);
-    printf("Battery thread joined\n");
+    pthread_join(lidarThreadId, NULL);
 
     #ifdef CAN_THREAD
     pthread_join(canReaderThreadId, NULL);
-    printf("CAN reader thread joined\n");
     #endif
 
 }

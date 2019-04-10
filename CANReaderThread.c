@@ -17,7 +17,7 @@ void* canReaderThread(void* args)
     int s;
     if((s = socket(PF_CAN, SOCK_RAW, CAN_RAW)) < 0)
     {
-        perror("Error while opening socket");
+        perror("[CAN] Error while opening socket");
         return;
     }
 
@@ -30,10 +30,10 @@ void* canReaderThread(void* args)
     addr.can_family  = AF_CAN;
     addr.can_ifindex = ifr.ifr_ifindex;
 
-    printf("%s at index %d\n", ifname, ifr.ifr_ifindex);
+    printf("[CAN] %s at index %d\n", ifname, ifr.ifr_ifindex);
 
     if(bind(s, (struct sockaddr *)&addr, sizeof(addr)) < 0) {
-        perror("Error in socket bind");
+        perror("[CAN] Error in socket bind");
         return -2;
     }
 
@@ -44,8 +44,8 @@ void* canReaderThread(void* args)
         int nbytes;
         nbytes = read(s, &frame, sizeof(struct can_frame));
 
-        printf("Read %d bytes\n", nbytes);
-        printf("%#010x - %#04x%02x%02x%02x%02x%02x%02x%02x - %d (%d)\n",
+        printf("[CAN] Read %d bytes\n", nbytes);
+        printf("[CAN] %#010x - %#04x%02x%02x%02x%02x%02x%02x%02x - %d (%d)\n",
                frame.can_id,
                frame.data[0],
                frame.data[1],

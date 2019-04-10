@@ -16,4 +16,20 @@ struct DebugPacket
     int strLength;
 };
 
+#define LIDAR_MEMORY_NAME "/tmp/voltron_lidar_data"
+
+#define LIDAR_DATA_NUM_POINTS 64
+#define LIDAR_DATA_NUM_REGIONS 8
+
+struct LIDARData
+{
+    struct
+    {
+        float x;
+        float y;
+        float z;
+        float reflectivity;
+    } point[LIDAR_DATA_NUM_POINTS];
+};
+
 #endif

@@ -16,12 +16,12 @@ void createDebugPipe(void)
     {
         if (errno != EEXIST)
         {
-            printf("Error: Could not create debug pipe.\n");
+            printf("[Debug] Error: Could not create debug pipe.\n");
         }
     }
 
     debugPipe = open(DEBUG_PIPE_NAME, O_RDWR);
-    printf("Debug pipe open\n");
+    printf("[Debug] Debug pipe open\n");
 }
 
 void writeDebugMessage(char* msg)
