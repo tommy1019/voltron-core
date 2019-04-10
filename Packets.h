@@ -17,7 +17,7 @@ struct BatteryPacket
 };
 
 
-#define LIDAR_MEMORY_NAME "/tmp/voltron_lidar_data"
+#define LIDAR_MEMORY_NAME "/voltron_lidar_data"
 
 #define LIDAR_DATA_NUM_POINTS 384 * 16
 #define LIDAR_DATA_NUM_REGIONS 8
