@@ -12,6 +12,7 @@
 #include <string.h>
 
 #include "Packets.h"
+#include "Net.h"
 
 struct Channel
 {
@@ -44,6 +45,12 @@ struct LIDARData* memoryRegions;
 
 void* lidarThread(void* args)
 {
+    int sockfd = createSocket(LIDAR_PORT);
+    if (sockfd < 0)
+    {
+        perror("[LIDAR] Error opening socket");
+    }
+
     if (shm_unlink(LIDAR_MEMORY_NAME) == -1)
     {
         printf("[LIDAR] Warn: Failed to unlink shared memory\n");
@@ -148,12 +155,14 @@ void* lidarThread(void* args)
 
         if (curPoint >= LIDAR_DATA_NUM_POINTS)
         {
+            struct LIDARPacket pkt;
+            pkt.updated = curBlock;
+            write(sockfd, &pkt, sizeof(struct LIDARPacket));
+
             curPoint = 0;
             curBlock++;
             if (curBlock >= LIDAR_DATA_NUM_REGIONS)
                 curBlock = 0;
-            //printf("[LIDAR] Completed block\n");
-            //TODO: Send notification over udp
         }
     }
 
