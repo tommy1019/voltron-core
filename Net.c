@@ -3,6 +3,8 @@
 #include <string.h>
 #include <arpa/inet.h>
 
+#include "Packets.h"
+
 int createSocket(int port)
 {
     int sockfd;
@@ -14,7 +16,7 @@ int createSocket(int port)
     struct sockaddr_in groupSock;
     memset(&groupSock, 0, sizeof(groupSock));
     groupSock.sin_family = AF_INET;
-    groupSock.sin_addr.s_addr = inet_addr("224.0.0.155");
+    groupSock.sin_addr.s_addr = inet_addr(MULTICAST_GROUP);
     groupSock.sin_port = htons(port);
 
     struct in_addr localInterface;
