@@ -159,6 +159,8 @@ void* lidarThread(void* args)
             pkt.updated = curBlock;
             write(sockfd, &pkt, sizeof(struct LIDARPacket));
 
+            printf("Wrote block %d\n", curBlock);
+
             curPoint = 0;
             curBlock++;
             if (curBlock >= LIDAR_DATA_NUM_REGIONS)
