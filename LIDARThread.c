@@ -13,6 +13,7 @@
 
 #include "Packets.h"
 #include "Net.h"
+#include "Debug.h"
 
 struct Channel
 {
@@ -158,6 +159,11 @@ void* lidarThread(void* args)
             struct LIDARPacket pkt;
             pkt.updated = curBlock;
             write(sockfd, &pkt, sizeof(struct LIDARPacket));
+
+            char buffer[50];
+            sprintf(buffer, "Block write %i\n", curBlock);
+            writeDebugMessage(buffer);
+            printf("Block write %i\n", curBlock);
 
             curPoint = 0;
             curBlock++;
