@@ -24,7 +24,7 @@ void writeDebugMessage(char* format, ...)
 
     va_list arg;
     va_start(arg, format);
-    sprintf(pkt.str, format, arg);
+    vsprintf(pkt.str, format, arg);
     va_end(arg);
 
     pkt.strLength = strlen(pkt.str);
