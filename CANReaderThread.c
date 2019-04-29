@@ -14,15 +14,16 @@
 #include <netinet/in.h>
 #include <string.h>
 #include <unistd.h>
+#include <stdlib.h>
 
 void* canReaderThread(void* args)
 {
     head = NULL;
     sem_init(&listLock, 0, 1);
 
-    if (pthread_create(canControlThreadId, NULL, canControlThread, NULL) != 0)
+    if (pthread_create(&canControlThreadId, NULL, canControlThread, NULL) != 0)
     {
-        writeDebugMessage("[CAN] Error: Could not create CAN control thread thread\n", name);
+        writeDebugMessage("[CAN] Error: Could not create CAN control thread thread\n");
     }
 
     int dataSocket = createSocket(CAN_DATA_PORT);
@@ -82,14 +83,14 @@ void* canReaderThread(void* args)
                nbytes,
                frame.can_dlc);
 
-        CANList* curElement = head;
+        struct CANList* curElement = head;
 
         while(curElement->next != NULL)
         {
             if (curElement->pkt.sender)
             {
                 struct CANDataPacket pkt;
-                pkt.pktId = curElement->pktId;
+                pkt.pktId = curElement->pkt.pktId;
                 pkt.sender = frame.can_id;
                 for (int i = 0; i < 8; i++)
                     pkt.data[i] = frame.data[i];
@@ -113,7 +114,7 @@ void* canControlThread(void* args)
         return NULL;
     }
 
-    writeDebugMessage("[Battery] Control socket open\n");
+    writeDebugMessage("[CAN] Control socket open\n");
 
     while(1)
     {
@@ -121,7 +122,7 @@ void* canControlThread(void* args)
 
         read(sockfd, &pkt, sizeof(struct CANControlPacket));
 
-        struct CANList* newElement = malloc(sizeof(struct CANControlPacket));
+        struct CANList* newElement = (struct CANList*)malloc(sizeof(struct CANControlPacket));
         newElement->pkt = pkt;
         newElement->next = NULL;
 
@@ -133,12 +134,14 @@ void* canControlThread(void* args)
         }
         else
         {
-            CANList* curElement = head;
+            struct CANList* curElement = head;
 
             while(curElement->next != NULL)
                 curElement = curElement->next;
 
             curElement->next = newElement;
+
+            writeDebugMessage("[CAN] Registered new CAN listener id: %i, sender: %i\n", newElement.pktId, newElement.sender);
         }
 
         sem_post(&listLock);

@@ -13,8 +13,8 @@ sem_t listLock;
 
 struct CANList
 {
-    CANControlPacket pkt;
-    CANList* next;
+    struct CANControlPacket pkt;
+    struct CANList* next;
 };
 
 struct CANList* head;
