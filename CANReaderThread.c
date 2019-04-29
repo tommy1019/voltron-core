@@ -3,6 +3,7 @@
 
 #include "CANReaderThread.h"
 #include "Debug.h"
+#include "Net.h"
 
 #include <linux/can.h>
 #include <linux/can/raw.h>
@@ -16,10 +17,25 @@
 
 void* canReaderThread(void* args)
 {
+    head = NULL;
+    sem_init(&listLock, 0, 1);
+
+    if (pthread_create(canControlThreadId, NULL, canControlThread, NULL) != 0)
+    {
+        writeDebugMessage("[CAN] Error: Could not create CAN control thread thread\n", name);
+    }
+
+    int dataSocket = createSocket(CAN_DATA_PORT);
+    if (dataSocket < 0)
+    {
+        writeDebugMessage("[CAN] Error: Opening data socket\n");
+        return NULL;
+    }
+
     int s;
     if((s = socket(PF_CAN, SOCK_RAW, CAN_RAW)) < 0)
     {
-        writeDebugMessage("[CAN] Error while opening can0 socket\n");
+        writeDebugMessage("[CAN] Error: While opening can0 socket\n");
         return NULL;
     }
 
@@ -29,7 +45,7 @@ void* canReaderThread(void* args)
     strcpy(ifr.ifr_name, ifname);
     if (ioctl(s, SIOCGIFINDEX, &ifr) < 0)
     {
-        writeDebugMessage("[CAN] Error getting index for can0\n");
+        writeDebugMessage("[CAN] Error: Getting index for can0\n");
         return NULL;
     }
 
@@ -41,7 +57,7 @@ void* canReaderThread(void* args)
 
     if(bind(s, (struct sockaddr *)&addr, sizeof(addr)) < 0)
     {
-        writeDebugMessage("[CAN] Error binding can0 socket\n");
+        writeDebugMessage("[CAN] Error: binding can0 socket\n");
         return NULL;
     }
 
@@ -65,9 +81,68 @@ void* canReaderThread(void* args)
                frame.data[7],
                nbytes,
                frame.can_dlc);
+
+        CANList* curElement = head;
+
+        while(curElement->next != NULL)
+        {
+            if (curElement->pkt.sender)
+            {
+                struct CANDataPacket pkt;
+                pkt.pktId = curElement->pktId;
+                pkt.sender = frame.can_id;
+                for (int i = 0; i < 8; i++)
+                    pkt.data[i] = frame.data[i];
+
+                write(dataSocket, &pkt, sizeof(struct CANDataPacket));
+            }
+
+            curElement = curElement->next;
+        }
     }
 
     return NULL;
+}
+
+void* canControlThread(void* args)
+{
+    int sockfd = createSocket(CAN_CONTROL_PORT);
+    if (sockfd < 0)
+    {
+        writeDebugMessage("[CAN] Error opening control socket\n");
+        return NULL;
+    }
+
+    writeDebugMessage("[Battery] Control socket open\n");
+
+    while(1)
+    {
+        struct CANControlPacket pkt;
+
+        read(sockfd, &pkt, sizeof(struct CANControlPacket));
+
+        struct CANList* newElement = malloc(sizeof(struct CANControlPacket));
+        newElement->pkt = pkt;
+        newElement->next = NULL;
+
+        sem_wait(&listLock);
+
+        if (head == NULL)
+        {
+            head = newElement;
+        }
+        else
+        {
+            CANList* curElement = head;
+
+            while(curElement->next != NULL)
+                curElement = curElement->next;
+
+            curElement->next = newElement;
+        }
+
+        sem_post(&listLock);
+    }
 }
 
 #endif

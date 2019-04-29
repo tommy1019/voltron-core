@@ -46,5 +46,4 @@ int main(int argc, char** argv)
     #endif
 
     writeDebugMessage("[CORE] Threads joined\n");
-
 }

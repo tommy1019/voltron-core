@@ -6,6 +6,8 @@
 #define DEBUG_PORT 12000
 #define BATTERY_PORT 12001
 #define LIDAR_PORT 12002
+#define CAN_CONTROL_PORT 12003
+#define CAN_DATA_PORT 12004
 
 #define DEBUG_MAX_LENGTH 1024
 struct DebugPacket
@@ -17,8 +19,20 @@ struct DebugPacket
 struct BatteryPacket
 {
     int cellNum;
-
     float charge;
+};
+
+struct CANControlPacket
+{
+    int pktId;
+    int sender;
+};
+
+struct CANDataPacket
+{
+    int pktId;
+    int sender;
+    char data[8];
 };
 
 #define LIDAR_MEMORY_NAME "/voltron_lidar_data"
