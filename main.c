@@ -15,16 +15,16 @@
 
 void startThread(pthread_t* threadId, void* function, char* name)
 {
-    printf("Starting %s thread\n", name);
+    writeDebugMessage("[CORE] Starting %s thread\n", name);
     if (pthread_create(threadId, NULL, function, NULL) != 0)
     {
-        printf("Error: Could not create %s thread\n", name);
+        writeDebugMessage("[CORE] Error: Could not create %s thread\n", name);
     }
 }
 
 int main(int argc, char** argv)
 {
-    //See random
+    //Seed random
     srand(time(0));
     
     createDebugPipe();
@@ -36,11 +36,15 @@ int main(int argc, char** argv)
     startThread(&canReaderThreadId, canReaderThread, "CAN Reader");
     #endif
 
+    writeDebugMessage("[CORE] Threads started\n");
+
     pthread_join(batteryThreadId, NULL);
     pthread_join(lidarThreadId, NULL);
 
     #ifdef CAN_THREAD
     pthread_join(canReaderThreadId, NULL);
     #endif
+
+    writeDebugMessage("[CORE] Threads joined\n");
 
 }

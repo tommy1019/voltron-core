@@ -48,13 +48,13 @@ void* lidarThread(void* args)
 {
     if (shm_unlink(LIDAR_MEMORY_NAME) == -1)
     {
-        printf("[LIDAR] Warn: Failed to unlink shared memory\n");
+        writeDebugMessage("[LIDAR] Warn: Failed to unlink shared memory\n");
     }
 
     int fd = shm_open(LIDAR_MEMORY_NAME, O_RDWR | O_CREAT, 0777);
     if (fd == -1)
     {
-        printf("[LIDAR] Error: Could not create shared memory region\n");
+        writeDebugMessage("[LIDAR] Error: Could not create shared memory region\n");
         return NULL;
     }
 
@@ -62,18 +62,18 @@ void* lidarThread(void* args)
 
     if (ftruncate(fd, dataSize) == -1)
     {
-        printf("[LIDAR] Error: Could not resize shared memory region to %zu\n", dataSize);
+        writeDebugMessage("[LIDAR] Error: Could not resize shared memory region to %zu\n", dataSize);
         return NULL;
     }
 
     memoryRegions = (struct LIDARData *)mmap(NULL, dataSize, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
     if (memoryRegions == MAP_FAILED)
     {
-        printf("[LIDAR] Error: Could not map memory to shared memory\n");
+        writeDebugMessage("[LIDAR] Error: Could not map memory to shared memory\n");
         return NULL;
     }
 
-    printf("[LIDAR] Created and mapped shared memory\n");
+    writeDebugMessage("[LIDAR] Created and mapped shared memory\n");
 
     float angles[16] = { -15, 1, -13, -3, -11, 5, -9, 7, -7, 9, -5, 11, -3, 13, -1, 15 };
     float cosAng[16];
@@ -87,13 +87,13 @@ void* lidarThread(void* args)
     int sockfd = createSocket(LIDAR_PORT);
     if (sockfd < 0)
     {
-        perror("[LIDAR] Error opening socket");
+        writeDebugMessage("[LIDAR] Error opening socket");
     }
 
     int soc = socket(AF_INET, SOCK_DGRAM, 0);
     if (soc < 0)
     {
-        printf("[LIDAR] Failed to create socket\n");
+        writeDebugMessage("[LIDAR] Failed to create socket\n");
         return NULL;
     }
 
@@ -105,8 +105,8 @@ void* lidarThread(void* args)
 
     if (bind(soc, (const struct sockaddr *)&servaddr, sizeof(servaddr)) < 0)
     {
-        printf("[LIDAR] Failed to bind socket\n");
-        exit(EXIT_FAILURE);
+        writeDebugMessage("[LIDAR] Failed to bind socket\n");
+        return NULL;
     }
 
     int curBlock = 0;
@@ -114,7 +114,6 @@ void* lidarThread(void* args)
 
     while(1)
     {
-        printf("1\n");
         struct Packet packet;
 
         int length = 0;
@@ -122,7 +121,7 @@ void* lidarThread(void* args)
 
         if (length != sizeof(struct Packet) && length != 512)
         {
-            printf("Error: Incorrect packet size: %i should be %lu\n", length, sizeof(struct Packet));
+            writeDebugMessage("Error: Incorrect packet size: %i should be %lu\n", length, sizeof(struct Packet));
 
             if (length == 27)
                 break;
@@ -130,7 +129,6 @@ void* lidarThread(void* args)
             continue;
         }
 
-        printf("2\n");
 
         for (int i = 0; i < 12; i++)
         {
@@ -140,7 +138,6 @@ void* lidarThread(void* args)
 
             for (int j = 0; j < 32; j++)
             {
-                printf("%i - %i - \n", i, j);
                 float dist = (float)(packet.dataBlocks[i].channelData[i].distance) * 2.0 / 10000.0;
                 float x, y, z, r;
 
@@ -158,18 +155,11 @@ void* lidarThread(void* args)
             }
         }
 
-        printf("3\n");
-
         if (curPoint >= LIDAR_DATA_NUM_POINTS)
         {
             struct LIDARPacket pkt;
             pkt.updated = curBlock;
             write(sockfd, &pkt, sizeof(struct LIDARPacket));
-
-//            char buffer[50];
-//            sprintf(buffer, "Block write %i\n", curBlock);
-//            writeDebugMessage(buffer);
-//            printf("Block write %i\n", curBlock);
 
             curPoint = 0;
             curBlock++;

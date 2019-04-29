@@ -7,9 +7,11 @@
 #define BATTERY_PORT 12001
 #define LIDAR_PORT 12002
 
+#define DEBUG_MAX_LENGTH 1024
 struct DebugPacket
 {
     int strLength;
+    char str[DEBUG_MAX_LENGTH];
 };
 
 struct BatteryPacket

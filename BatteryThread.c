@@ -6,16 +6,18 @@
 
 #include "Packets.h"
 #include "Net.h"
+#include "Debug.h"
 
 void* batteryThread(void* args)
 {
     int sockfd = createSocket(BATTERY_PORT);
     if (sockfd < 0)
     {
-        perror("[Battery] Error opening socket");
+        writeDebugMessage("[Battery] Error opening socket\n");
+        return NULL;
     }
 
-    printf("[Battery] Socket open\n");
+    writeDebugMessage("[Battery] Socket open\n");
 
     do
     {
