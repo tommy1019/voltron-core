@@ -46,12 +46,6 @@ struct LIDARData* memoryRegions;
 
 void* lidarThread(void* args)
 {
-    int sockfd = createSocket(LIDAR_PORT);
-    if (sockfd < 0)
-    {
-        perror("[LIDAR] Error opening socket");
-    }
-
     if (shm_unlink(LIDAR_MEMORY_NAME) == -1)
     {
         printf("[LIDAR] Warn: Failed to unlink shared memory\n");
@@ -72,7 +66,7 @@ void* lidarThread(void* args)
         return NULL;
     }
 
-    memoryRegions = mmap(NULL, dataSize, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
+    memoryRegions = (struct LIDARData *)mmap(NULL, dataSize, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
     if (memoryRegions == MAP_FAILED)
     {
         printf("[LIDAR] Error: Could not map memory to shared memory\n");
@@ -88,6 +82,12 @@ void* lidarThread(void* args)
     {
         cosAng[i] = cos(angles[i] * M_PI / 180.0);
         sinAng[i] = sin(angles[i] * M_PI / 180.0);
+    }
+
+    int sockfd = createSocket(LIDAR_PORT);
+    if (sockfd < 0)
+    {
+        perror("[LIDAR] Error opening socket");
     }
 
     int soc = socket(AF_INET, SOCK_DGRAM, 0);
@@ -114,6 +114,7 @@ void* lidarThread(void* args)
 
     while(1)
     {
+        printf("1\n");
         struct Packet packet;
 
         int length = 0;
@@ -129,6 +130,8 @@ void* lidarThread(void* args)
             continue;
         }
 
+        printf("2\n");
+
         for (int i = 0; i < 12; i++)
         {
             float azim = (float)(packet.dataBlocks[i].azimuth) / 100.0 * M_PI / 180.0;
@@ -137,6 +140,7 @@ void* lidarThread(void* args)
 
             for (int j = 0; j < 32; j++)
             {
+                printf("%i - %i - \n", i, j);
                 float dist = (float)(packet.dataBlocks[i].channelData[i].distance) * 2.0 / 10000.0;
                 float x, y, z, r;
 
@@ -154,16 +158,18 @@ void* lidarThread(void* args)
             }
         }
 
+        printf("3\n");
+
         if (curPoint >= LIDAR_DATA_NUM_POINTS)
         {
             struct LIDARPacket pkt;
             pkt.updated = curBlock;
             write(sockfd, &pkt, sizeof(struct LIDARPacket));
 
-            char buffer[50];
-            sprintf(buffer, "Block write %i\n", curBlock);
-            writeDebugMessage(buffer);
-            printf("Block write %i\n", curBlock);
+//            char buffer[50];
+//            sprintf(buffer, "Block write %i\n", curBlock);
+//            writeDebugMessage(buffer);
+//            printf("Block write %i\n", curBlock);
 
             curPoint = 0;
             curBlock++;
