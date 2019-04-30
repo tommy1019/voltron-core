@@ -96,7 +96,10 @@ void* canReaderThread(void* args)
                 for (int i = 0; i < 8; i++)
                     pkt.data[i] = frame.data[i];
 
-                write(dataSocket, &pkt, sizeof(struct CANDataPacket));
+                if (write(dataSocket, &pkt, sizeof(struct CANDataPacket)) != sizeof(struct CANDataPacket))
+                {
+                    writeDebugMessage("[CAN] Failed to write entire packet\n");
+                }
             }
 
             curElement = curElement->next;
@@ -121,7 +124,10 @@ void* canControlThread(void* args)
     {
         struct CANControlPacket pkt;
 
-        read(sockfd, &pkt, sizeof(struct CANControlPacket));
+        if (read(sockfd, &pkt, sizeof(struct CANControlPacket)) != sizeof(struct CANControlPacket))
+        {
+            continue;
+        }
 
         struct CANList* newElement = (struct CANList*)malloc(sizeof(struct CANControlPacket));
         newElement->pkt = pkt;

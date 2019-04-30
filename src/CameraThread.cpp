@@ -69,7 +69,7 @@ void* cameraThread(void* args)
     int sockfd = createSocket(CAMERA_PORT);
     if (sockfd < 0)
     {
-        writeDebugMessage("[LIDAR] Error opening socket");
+        writeDebugMessage("[CAM] Error opening socket");
     }
 
     int curImage = 0;
@@ -81,7 +81,7 @@ void* cameraThread(void* args)
             sl::Mat image;
             sl::Mat depth_map;
 
-            zed.retrieveImage(image, sl::VIEW_LEFT);
+            zed.retrieveImage(image, sl::VIEW_SIDE_BY_SIDE);
             zed.retrieveMeasure(depth_map, sl::MEASURE_DEPTH);
 
             curImage++;
@@ -93,7 +93,10 @@ void* cameraThread(void* args)
 
             struct CameraPacket pkt;
             pkt.updated = curImage;
-            write(sockfd, &pkt, sizeof(struct CameraPacket));
+            if (write(sockfd, &pkt, sizeof(struct CameraPacket)) != sizeof(struct CameraPacket))
+            {
+                writeDebugMessage("[CAM] Failed to write entire packet");
+            }
         }
     }
 

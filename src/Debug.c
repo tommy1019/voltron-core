@@ -18,7 +18,7 @@ void createDebugPipe(void)
     }
 }
 
-void writeDebugMessage(char* format, ...)
+void writeDebugMessage(const char* format, ...)
 {
     struct DebugPacket pkt;
 

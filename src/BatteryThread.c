@@ -26,7 +26,11 @@ void* batteryThread(void* args)
         pkt.cellNum = rand() % 20;
         pkt.charge = rand() % 100 / 100.0;
 
-        write(sockfd, &pkt, sizeof(struct BatteryPacket));
+        if (write(sockfd, &pkt, sizeof(struct BatteryPacket)) != sizeof(struct BatteryPacket))
+        {
+            writeDebugMessage("[Battery] Failed to write packet\n");
+            return NULL;
+        }
 
         usleep(80000);
     }

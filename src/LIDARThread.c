@@ -164,9 +164,10 @@ void* lidarThread(void* args)
         {
             struct LIDARPacket pkt;
             pkt.updated = curBlock;
-            write(sockfd, &pkt, sizeof(struct LIDARPacket));
-
-            //writeDebugMessage("Wrote block\n");
+            if (write(sockfd, &pkt, sizeof(struct LIDARPacket)) != sizeof(struct LIDARPacket))
+            {
+                writeDebugMessage("[LIDAR] Failed to write entire packet\n");
+            }
 
             curPoint = 0;
             curBlock++;

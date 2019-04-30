@@ -7,6 +7,6 @@ int debugSock;
 
 void createDebugPipe(void);
 
-void writeDebugMessage(char* format, ...);
+void writeDebugMessage(const char* format, ...);
 
 #endif
