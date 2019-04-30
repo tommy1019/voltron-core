@@ -6,11 +6,8 @@
 #include "Debug.h"
 #include "BatteryThread.h"
 #include "LIDARThread.h"
-#include "CameraThread.h"
-
-#ifdef CAN_THREAD
 #include "CANReaderThread.h"
-#endif
+#include "CameraThread.h"
 
 void startThread(pthread_t* threadId, void* function, char* name)
 {
