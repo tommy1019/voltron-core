@@ -33,3 +33,36 @@ int createSocket(int port)
 
     return sockfd;
 }
+
+int createReadSocket(int port)
+{
+    int sockfd;
+    if ((sockfd = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP)) < 0)
+    {
+        return -1;
+    }
+
+    int one = 1;
+    setsockopt(sockfd, SOL_SOCKET, SO_REUSEPORT, &one, sizeof(one));
+
+    struct sockaddr_in addr;
+    memset(&addr, 0, sizeof(addr));
+    addr.sin_family = AF_INET;
+    addr.sin_addr.s_addr = INADDR_ANY;
+    addr.sin_port = htons(port);
+
+    if (bind(sockfd, (const struct sockaddr *)&addr, sizeof(addr)) < 0)
+    {
+        return -1;
+    }
+
+    struct ip_mreq group;
+    group.imr_multiaddr.s_addr = inet_addr(MULTICAST_GROUP);
+    group.imr_interface.s_addr = inet_addr("127.0.0.1");
+    if(setsockopt(sockfd, IPPROTO_IP, IP_ADD_MEMBERSHIP, (char *)&group, sizeof(group)) < 0)
+    {
+        return -1;
+    }
+
+    return sockfd;
+}

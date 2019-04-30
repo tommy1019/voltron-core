@@ -69,7 +69,6 @@ void* canReaderThread(void* args)
         int nbytes;
         nbytes = read(s, &frame, sizeof(struct can_frame));
 
-        writeDebugMessage("[CAN] Read %d bytes\n", nbytes);
         writeDebugMessage("[CAN] %#010x - %#04x%02x%02x%02x%02x%02x%02x%02x - %d (%d)\n",
                frame.can_id,
                frame.data[0],
@@ -82,6 +81,9 @@ void* canReaderThread(void* args)
                frame.data[7],
                nbytes,
                frame.can_dlc);
+
+        if (head == NULL)
+            continue;
 
         struct CANList* curElement = head;
 
@@ -107,7 +109,7 @@ void* canReaderThread(void* args)
 
 void* canControlThread(void* args)
 {
-    int sockfd = createSocket(CAN_CONTROL_PORT);
+    int sockfd = createReadSocket(CAN_CONTROL_PORT);
     if (sockfd < 0)
     {
         writeDebugMessage("[CAN] Error opening control socket\n");
