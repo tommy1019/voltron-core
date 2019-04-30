@@ -36,6 +36,28 @@ struct CANDataPacket
     char data[8];
 };
 
+enum LoggingControlCode
+{
+    Shutdown = 0,
+    StartDrive = 1,
+    EndDrive = 2,
+    StartBatteryCapture = 3,
+    EndBatteryCapture = 4,
+    StartCANCapture = 5,
+    EndCANCapture = 6,
+    StartLIDARCapture = 7,
+    EndLIDARCapture = 8,
+    StartGPSCapture = 9,
+    EndGPSCapture = 10,
+    StartZEDCapture = 11,
+    EndZEDCapture = 12
+};
+
+struct LoggingControlPacket
+{
+    LoggingControlCode code;
+};
+
 #define LIDAR_MEMORY_NAME "/voltron_lidar_data"
 
 #define LIDAR_DATA_NUM_POINTS 384 * 3 * 16
@@ -57,23 +79,16 @@ struct LIDARPacket
     int updated;
 };
 
-enum LoggingControlCode {Shutdown = 0,
-                        StartDrive = 1,
-                        EndDrive = 2,
-                        StartBatteryCapture = 3,
-                        EndBatteryCapture = 4,
-                        StartCANCapture = 5,
-                        EndCANCapture = 6,
-                        StartLIDARCapture = 7,
-                        EndLIDARCapture = 8,
-                        StartGPSCapture = 9,
-                        EndGPSCapture = 10,
-                        StartZEDCapture = 11,
-                        EndZEDCapture = 12};
+#define CAM_MEMORY_NAME "/voltron_camera_data"
 
-struct LoggingControlPacket
+#define CAM_WIDTH 1280
+#define CAM_HEIGHT 720
+#define CAM_NUM_IMAGES 4
+
+struct CAMData
 {
-    LoggingControlCode code;
-};
+    char rgbImage[CAM_WIDTH * 2][CAM_HEIGHT][4];
+    float depth[CAM_WIDTH][CAM_HEIGHT];
+}
 
 #endif
