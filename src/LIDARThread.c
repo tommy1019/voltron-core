@@ -46,6 +46,11 @@ struct LIDARData* memoryRegions;
 
 void* lidarThread(void* args)
 {
+    if (pthread_create(&lidarGPSThreadId, NULL, lidarGPSThread, NULL) != 0)
+    {
+        writeDebugMessage("[LIDAR] Error: Could not create LIDAR GPS thread thread\n");
+    }
+
     if (shm_unlink(LIDAR_MEMORY_NAME) == -1)
     {
         writeDebugMessage("[LIDAR] Warn: Failed to unlink shared memory\n");
@@ -161,6 +166,8 @@ void* lidarThread(void* args)
             pkt.updated = curBlock;
             write(sockfd, &pkt, sizeof(struct LIDARPacket));
 
+            //writeDebugMessage("Wrote block\n");
+
             curPoint = 0;
             curBlock++;
             if (curBlock >= LIDAR_DATA_NUM_REGIONS)
@@ -169,4 +176,45 @@ void* lidarThread(void* args)
     }
 
     return NULL;
+}
+
+#define GPS_PORT 8308
+
+struct GPSPacket
+{
+    char unused[198];
+    uint32_t timestamp;
+    uint8_t pulsePerSecond;
+    char padding[3];
+    char gpsString[306];
+};
+
+void* lidarGPSThread(void* args)
+{
+    int soc = socket(AF_INET, SOCK_DGRAM, 0);
+    if (soc < 0)
+    {
+        writeDebugMessage("[LIDAR] Failed to create GPS socket\n");
+        return NULL;
+    }
+
+    struct sockaddr_in servaddr;
+    memset(&servaddr, 0, sizeof(servaddr));
+    servaddr.sin_family = AF_INET;
+    servaddr.sin_addr.s_addr = INADDR_ANY;
+    servaddr.sin_port = htons(GPS_PORT);
+
+    if (bind(soc, (const struct sockaddr *)&servaddr, sizeof(servaddr)) < 0)
+    {
+        writeDebugMessage("[LIDAR] Failed to bind GPS socket\n");
+        return NULL;
+    }
+
+    while(1)
+    {
+        struct GPSPacket gpsPacket;
+        recv(soc, &gpsPacket, sizeof(struct GPSPacket), MSG_WAITALL);
+
+        writeDebugMessage("GPS: %s\n", gpsPacket.gpsString);
+    }
 }

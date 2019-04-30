@@ -4,7 +4,9 @@
 #include <pthread.h>
 
 pthread_t lidarThreadId;
+pthread_t lidarGPSThreadId;
 
 void* lidarThread(void* args);
+void* lidarGPSThread(void* args);
 
 #endif
