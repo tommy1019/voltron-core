@@ -26,6 +26,7 @@ void* cameraThread(void* args)
     sl::InitParameters init_params;
     init_params.camera_resolution = sl::RESOLUTION_HD720;
     init_params.camera_fps = 60;
+    init_params.sdk_verbose = false;
 
     sl::ERROR_CODE err = zed.open(init_params);
     if (err != sl::SUCCESS)
