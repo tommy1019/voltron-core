@@ -89,6 +89,6 @@ struct CAMData
 {
     char rgbImage[CAM_WIDTH * 2][CAM_HEIGHT][4];
     float depth[CAM_WIDTH][CAM_HEIGHT];
-}
+};
 
 #endif
