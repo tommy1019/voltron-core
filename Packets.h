@@ -8,6 +8,7 @@
 #define LIDAR_PORT 12002
 #define CAN_CONTROL_PORT 12003
 #define CAN_DATA_PORT 12004
+#define LOGGING_CONTROL_PORT 12005
 
 #define DEBUG_MAX_LENGTH 1024
 struct DebugPacket
@@ -54,6 +55,25 @@ struct LIDARData
 struct LIDARPacket
 {
     int updated;
+};
+
+enum LoggingControlCode {Shutdown = 0,
+                        StartDrive = 1,
+                        EndDrive = 2,
+                        StartBatteryCapture = 3,
+                        EndBatteryCapture = 4,
+                        StartCANCapture = 5,
+                        EndCANCapture = 6,
+                        StartLIDARCapture = 7,
+                        EndLIDARCapture = 8,
+                        StartGPSCapture = 9,
+                        EndGPSCapture = 10,
+                        StartZEDCapture = 11,
+                        EndZEDCapture = 12};
+
+struct LoggingControlPacket
+{
+    LoggingControlCode code;
 };
 
 #endif
