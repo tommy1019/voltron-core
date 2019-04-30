@@ -27,15 +27,21 @@ int main(int argc, char** argv)
 
     startThread(&batteryThreadId, batteryThread, "Battery");
     startThread(&lidarThreadId, lidarThread, "LIDAR");
+
+    #ifdef COMPILE_ALL
     startThread(&canReaderThreadId, canReaderThread, "CAN Reader");
     startThread(&cameraThreadId, cameraThread, "Camera");
+    #endif
 
     writeDebugMessage("[CORE] Threads started\n");
 
     pthread_join(batteryThreadId, NULL);
     pthread_join(lidarThreadId, NULL);
+
+    #ifdef COMPILE_ALL
     pthread_join(canReaderThreadId, NULL);
     pthread_join(cameraThreadId, NULL);
+    #endif
 
     writeDebugMessage("[CORE] Threads joined\n");
 }

@@ -1,3 +1,5 @@
+#ifdef COMPILE_ALL
+
 #include <stdio.h>
 #include <iostream>
 #include <stdint.h>
@@ -97,3 +99,5 @@ void* cameraThread(void* args)
 
     zed.close();
 }
+
+#endif
