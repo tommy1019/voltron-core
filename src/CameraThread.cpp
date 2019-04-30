@@ -16,7 +16,7 @@
 
 extern "C"
 {
-    void writeDebugMessage(char* format, ...);
+    void writeDebugMessage(const char* format, ...);
     int createSocket(int port);
     void* cameraThread(void* args);
 };
