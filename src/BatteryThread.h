@@ -5,6 +5,9 @@
 
 pthread_t batteryThreadId;
 
+/*
+ * Sends random battery data for testing
+ */
 void* batteryThread(void* args);
 
 #endif

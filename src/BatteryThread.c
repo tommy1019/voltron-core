@@ -10,6 +10,10 @@
 
 void* batteryThread(void* args)
 {
+    //Seed random
+    srand(time(0));
+
+    //Create udp socket for writing data
     int sockfd = createSocket(BATTERY_PORT);
     if (sockfd < 0)
     {
@@ -19,23 +23,28 @@ void* batteryThread(void* args)
 
     writeDebugMessage("[Battery] Socket open\n");
 
-    do
+    //Infinitely send dummy data
+    while (1)
     {
+        //Packet to be sent
         struct BatteryPacket pkt;
 
+        //Fill packet with dummy data
         pkt.cellNum = rand() % 20;
         pkt.charge = rand() % 100 / 100.0;
 
+        //Send packet
         if (write(sockfd, &pkt, sizeof(struct BatteryPacket)) != sizeof(struct BatteryPacket))
         {
             writeDebugMessage("[Battery] Failed to write packet\n");
             return NULL;
         }
 
+        //Sleep as to not flood data collectors
         usleep(80000);
     }
-    while (1);
 
+    //Close udp socket
     close(sockfd);
 
     return NULL;

@@ -9,20 +9,10 @@
 #include "CANReaderThread.h"
 #include "CameraThread.h"
 
-void startThread(pthread_t* threadId, void* function, char* name)
-{
-    writeDebugMessage("[CORE] Starting %s thread\n", name);
-    if (pthread_create(threadId, NULL, function, NULL) != 0)
-    {
-        writeDebugMessage("[CORE] Error: Could not create %s thread\n", name);
-    }
-}
+void startThread(pthread_t* threadId, void* function, char* name);
 
 int main(int argc, char** argv)
 {
-    //Seed random
-    srand(time(0));
-    
     createDebugPipe();
 
     startThread(&batteryThreadId, batteryThread, "Battery");
@@ -44,4 +34,16 @@ int main(int argc, char** argv)
     #endif
 
     writeDebugMessage("[CORE] Threads joined\n");
+}
+
+/*
+ * Helper function for starting threads
+ */
+void startThread(pthread_t* threadId, void* function, char* name)
+{
+    writeDebugMessage("[CORE] Starting %s thread\n", name);
+    if (pthread_create(threadId, NULL, function, NULL) != 0)
+    {
+        writeDebugMessage("[CORE] Error: Could not create %s thread\n", name);
+    }
 }

@@ -5,6 +5,9 @@
 
 pthread_t cameraThreadId;
 
+/*
+ *  Grabs images from attached ZED camera and stores them in shared memory
+ */
 void* cameraThread(void* args);
 
 #endif
