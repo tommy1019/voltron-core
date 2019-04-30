@@ -9,6 +9,7 @@
 #define CAN_CONTROL_PORT 12003
 #define CAN_DATA_PORT 12004
 #define LOGGING_CONTROL_PORT 12005
+#define CAMERA_PORT 12006
 
 #define DEBUG_MAX_LENGTH 1024
 struct DebugPacket
@@ -89,6 +90,11 @@ struct CAMData
 {
     char rgbImage[CAM_WIDTH * 2][CAM_HEIGHT][4];
     float depth[CAM_WIDTH][CAM_HEIGHT];
+};
+
+struct CameraPacket
+{
+    int updated;
 };
 
 #endif

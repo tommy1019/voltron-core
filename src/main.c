@@ -3,11 +3,10 @@
 #include <time.h>
 #include <signal.h>
 
-#include "Defines.h"
-
+#include "Debug.h"
 #include "BatteryThread.h"
 #include "LIDARThread.h"
-#include "Debug.h"
+#include "CameraThread.h"
 
 #ifdef CAN_THREAD
 #include "CANReaderThread.h"
@@ -31,19 +30,15 @@ int main(int argc, char** argv)
 
     startThread(&batteryThreadId, batteryThread, "Battery");
     startThread(&lidarThreadId, lidarThread, "LIDAR");
-
-    #ifdef CAN_THREAD
     startThread(&canReaderThreadId, canReaderThread, "CAN Reader");
-    #endif
+    startThread(&cameraThreadId, cameraThread, "Camera");
 
     writeDebugMessage("[CORE] Threads started\n");
 
     pthread_join(batteryThreadId, NULL);
     pthread_join(lidarThreadId, NULL);
-
-    #ifdef CAN_THREAD
     pthread_join(canReaderThreadId, NULL);
-    #endif
+    pthread_join(cameraThreadId, NULL);
 
     writeDebugMessage("[CORE] Threads joined\n");
 }

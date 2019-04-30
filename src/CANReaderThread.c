@@ -1,6 +1,3 @@
-#include "Defines.h"
-#ifdef CAN_THREAD
-
 #include "CANReaderThread.h"
 #include "Debug.h"
 #include "Net.h"
@@ -149,5 +146,3 @@ void* canControlThread(void* args)
         sem_post(&listLock);
     }
 }
-
-#endif
