@@ -66,7 +66,7 @@ void* canReaderThread(void* args)
         int nbytes;
         nbytes = read(s, &frame, sizeof(struct can_frame));
 
-        writeDebugMessage("[CAN] %#010x - %#04x%02x%02x%02x%02x%02x%02x%02x - %d (%d)\n",
+        /*writeDebugMessage("[CAN] %#010x - %#04x%02x%02x%02x%02x%02x%02x%02x - %d (%d)\n",
                frame.can_id,
                frame.data[0],
                frame.data[1],
@@ -77,7 +77,7 @@ void* canReaderThread(void* args)
                frame.data[6],
                frame.data[7],
                nbytes,
-               frame.can_dlc);
+               frame.can_dlc);*/
 
         if (head == NULL)
             continue;

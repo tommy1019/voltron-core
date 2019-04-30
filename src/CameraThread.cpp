@@ -11,7 +11,13 @@
 #include <sl/Camera.hpp>
 
 #include "Packets.h"
-#include "Debug.h"
+
+extern "C"
+{
+    void writeDebugMessage(char* format, ...);
+    int createSocket(int port);
+    void* cameraThread(void* args);
+};
 
 void* cameraThread(void* args)
 {
@@ -79,8 +85,8 @@ void* cameraThread(void* args)
             if (curImage == CAM_NUM_IMAGES)
                 curImage = 0;
 
-            memcpy(sharedMemory[curImage].rgbImage, image.getPtr(), CAM_WIDTH * CAM_HEIGHT * 4);
-            memcpy(sharedMemory[curImage].depth, depth_map.getPtr(), CAM_WIDTH * CAM_HEIGHT * 4);
+            memcpy(sharedMemory[curImage].rgbImage, image.getPtr<sl::uchar1>(), CAM_WIDTH * CAM_HEIGHT * 4);
+            memcpy(sharedMemory[curImage].depth, depth_map.getPtr<sl::uchar1>(), CAM_WIDTH * CAM_HEIGHT * 4);
 
             struct CameraPacket pkt;
             pkt.updated = curImage;
