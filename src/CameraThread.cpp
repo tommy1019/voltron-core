@@ -11,7 +11,7 @@
 #include <sl/Camera.hpp>
 
 #include "Packets.h"
-#incldue "Debug.h"
+#include "Debug.h"
 
 void* cameraThread(void* args)
 {
