@@ -159,9 +159,9 @@ void* canControlThread(void* args)
                 curElement = curElement->next;
 
             curElement->next = newElement;
-
-            writeDebugMessage("[CAN] Registered new CAN listener id: %i, sender: %i\n", newElement->pkt.pktId, newElement->pkt.sender);
         }
+
+        writeDebugMessage("[CAN] Registered new CAN listener id: %i, sender: %i\n", newElement->pkt.pktId, newElement->pkt.sender);
 
         //Relese lock on list
         sem_post(&listLock);
