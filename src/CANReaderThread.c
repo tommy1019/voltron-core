@@ -96,7 +96,7 @@ void* canReaderThread(void* args)
 
                 //Fill with correct data
                 pkt.pktId = curElement->pkt.pktId;
-                pkt.sender = frame.can_id;
+                pkt.sender = canID;
                 for (int i = 0; i < 8; i++)
                     pkt.data[i] = frame.data[i];
 
