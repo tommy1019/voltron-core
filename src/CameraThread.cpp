@@ -43,15 +43,17 @@ void* cameraThread(void* args)
 
     size_t dataSize = sizeof(struct CAMData) * CAM_NUM_IMAGES;
 
-    //Open new shared memory
+    //Open shared memory
     int fd = shm_open(CAM_MEMORY_NAME, O_RDWR, 0777);
     if (fd == -1)
     {
+        //Create new shared memory if none exists
         fd = shm_open(CAM_MEMORY_NAME, O_RDWR | O_CREAT, 0777);
         if (fd == -1)
         {
             writeDebugMessage("[CAM] Failed to create shared memory.\n");
             zed.close();
+            return NULL;
         }
 
         //Resize new shared memory to correct size
@@ -59,6 +61,7 @@ void* cameraThread(void* args)
         {
             writeDebugMessage("[CAM] Could not resize shared memory to correct size.\n");
             zed.close();
+            return NULL;
         }
     }
 
@@ -69,6 +72,7 @@ void* cameraThread(void* args)
     {
         writeDebugMessage("[CAM] Could not map shared memory.\n");
         zed.close();
+        return NULL;
     }
 
     writeDebugMessage("[CAM] Created and mapped shared memory.\n");

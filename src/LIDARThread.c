@@ -51,24 +51,24 @@ void* lidarThread(void* args)
         writeDebugMessage("[LIDAR] Error: Could not create LIDAR GPS thread thread\n");
     }
 
-    if (shm_unlink(LIDAR_MEMORY_NAME) == -1)
-    {
-        writeDebugMessage("[LIDAR] Warn: Failed to unlink shared memory\n");
-    }
-
-    int fd = shm_open(LIDAR_MEMORY_NAME, O_RDWR | O_CREAT, 0777);
+    //Open shared memory
+    int fd = shm_open(LIDAR_MEMORY_NAME, O_RDWR, 0777);
     if (fd == -1)
     {
-        writeDebugMessage("[LIDAR] Error: Could not create shared memory region\n");
-        return NULL;
-    }
+        //Create new shared memory if none exists
+        fd = shm_open(LIDAR_MEMORY_NAME, O_RDWR | O_CREAT, 0777);
+        if (fd == -1)
+        {
+            writeDebugMessage("[LIDAR] Failed to create shared memory.\n");
+            return NULL;
+        }
 
-    size_t dataSize = sizeof(struct LIDARData) * LIDAR_DATA_NUM_REGIONS;
-
-    if (ftruncate(fd, dataSize) == -1)
-    {
-        writeDebugMessage("[LIDAR] Error: Could not resize shared memory region to %zu\n", dataSize);
-        return NULL;
+        //Resize new shared memory to correct size
+        if (ftruncate(fd, dataSize) == -1)
+        {
+            writeDebugMessage("[LIDAR] Could not resize shared memory to correct size.\n");
+            return NULL;
+        }
     }
 
     memoryRegions = (struct LIDARData *)mmap(NULL, dataSize, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
