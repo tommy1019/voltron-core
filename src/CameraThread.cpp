@@ -41,26 +41,24 @@ void* cameraThread(void* args)
         return NULL;
     }
 
-    //Remove old shared memory
-    if (shm_unlink(CAM_MEMORY_NAME) == -1)
-    {
-        writeDebugMessage("[CAM] Failed to unlink shared memory.\n");
-    }
-
     //Open new shared memory
-    int fd = shm_open(CAM_MEMORY_NAME, O_RDWR | O_CREAT, 0777);
+    int fd = shm_open(CAM_MEMORY_NAME, O_RDWR, 0777);
     if (fd == -1)
     {
-        writeDebugMessage("[CAM] Failed to open shared memory.\n");
-        zed.close();
-    }
+        fd = shm_open(CAM_MEMORY_NAME, O_RDWR | O_CREAT, 0777);
+        if (fd == -1)
+        {
+            writeDebugMessage("[CAM] Failed to create shared memory.\n");
+            zed.close();
+        }
 
-    //Resize new shared memory to correct size
-    size_t dataSize = sizeof(struct CAMData) * CAM_NUM_IMAGES;
-    if (ftruncate(fd, dataSize) == -1)
-    {
-        writeDebugMessage("[CAM] Could not resize shared memory to correct size.\n");
-        zed.close();
+        //Resize new shared memory to correct size
+        size_t dataSize = sizeof(struct CAMData) * CAM_NUM_IMAGES;
+        if (ftruncate(fd, dataSize) == -1)
+        {
+            writeDebugMessage("[CAM] Could not resize shared memory to correct size.\n");
+            zed.close();
+        }
     }
 
     //Map shared memory to sharedMemory
