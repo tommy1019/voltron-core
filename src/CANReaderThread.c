@@ -82,12 +82,14 @@ void* canReaderThread(void* args)
         if (head == NULL)
             continue;
 
+        int canID = frame.can_id & 0x7FFFFFFF;
+
         //Search list for received sender id
         struct CANList* curElement = head;
         do
         {
             //If found correct sender
-            if (curElement->pkt.sender == frame.can_id)
+            if (curElement->pkt.sender == canID)
             {
                 //Create CAN Data packet to be sent over UDP
                 struct CANDataPacket pkt;
@@ -107,7 +109,7 @@ void* canReaderThread(void* args)
 
             curElement = curElement->next;
         }
-        while(curElement->next != NULL);
+        while(curElement != NULL);
     }
 
     return NULL;
