@@ -84,7 +84,7 @@ void* canReaderThread(void* args)
 
         //Search list for received sender id
         struct CANList* curElement = head;
-        while(curElement->next != NULL)
+        do
         {
             //If found correct sender
             if (curElement->pkt.sender == frame.can_id)
@@ -104,6 +104,7 @@ void* canReaderThread(void* args)
                     writeDebugMessage("[CAN] Failed to write entire packet\n");
                 }
             }
+            while(curElement->next != NULL);
 
             curElement = curElement->next;
         }
