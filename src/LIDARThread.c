@@ -51,6 +51,8 @@ void* lidarThread(void* args)
         writeDebugMessage("[LIDAR] Error: Could not create LIDAR GPS thread thread\n");
     }
 
+    size_t dataSize = sizeof(struct LIDARData) * LIDAR_DATA_NUM_REGIONS;
+
     //Open shared memory
     int fd = shm_open(LIDAR_MEMORY_NAME, O_RDWR, 0777);
     if (fd == -1)
