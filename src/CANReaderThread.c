@@ -104,10 +104,10 @@ void* canReaderThread(void* args)
                     writeDebugMessage("[CAN] Failed to write entire packet\n");
                 }
             }
-            while(curElement->next != NULL);
 
             curElement = curElement->next;
         }
+        while(curElement->next != NULL);
     }
 
     return NULL;
