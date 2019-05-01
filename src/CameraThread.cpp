@@ -41,6 +41,8 @@ void* cameraThread(void* args)
         return NULL;
     }
 
+    size_t dataSize = sizeof(struct CAMData) * CAM_NUM_IMAGES;
+
     //Open new shared memory
     int fd = shm_open(CAM_MEMORY_NAME, O_RDWR, 0777);
     if (fd == -1)
@@ -53,7 +55,6 @@ void* cameraThread(void* args)
         }
 
         //Resize new shared memory to correct size
-        size_t dataSize = sizeof(struct CAMData) * CAM_NUM_IMAGES;
         if (ftruncate(fd, dataSize) == -1)
         {
             writeDebugMessage("[CAM] Could not resize shared memory to correct size.\n");
