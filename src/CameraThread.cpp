@@ -103,7 +103,7 @@ void* cameraThread(void* args)
                 curImage = 0;
 
             //Copy from mat objects to shared memory
-            memcpy(sharedMemory[curImage].rgbImage, image.getPtr<sl::uchar1>(), CAM_WIDTH * CAM_HEIGHT * 4);
+            memcpy(sharedMemory[curImage].rgbImage, image.getPtr<sl::uchar1>(), CAM_WIDTH * 2 * CAM_HEIGHT * 4);
             memcpy(sharedMemory[curImage].depth, depth_map.getPtr<sl::uchar1>(), CAM_WIDTH * CAM_HEIGHT * 4);
 
             //Send UDP packet about updated image

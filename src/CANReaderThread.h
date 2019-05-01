@@ -19,7 +19,14 @@ struct CANList
 
 struct CANList* head;
 
+/*
+ *  Reads CAN data from the cart's CAN bus. Sends out packets as requested by CAN sender id
+ */
 void* canReaderThread(void* args);
+
+/*
+ *  Listens for packets on the CAN control port, and registerers 
+ */
 void* canControlThread(void* args);
 
 #endif
