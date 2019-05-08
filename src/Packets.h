@@ -16,6 +16,7 @@
 #define CAMERA_PORT 12006
 
 //Packet for sending debug messages, and max length of debug messages
+//Sent on every debug message
 #define DEBUG_MAX_LENGTH 1024
 struct DebugPacket
 {
@@ -25,6 +26,7 @@ struct DebugPacket
 };
 
 //Temporary battery packet
+//Sent on a fixed time interval
 struct BatteryPacket
 {
     time_t timestamp;
@@ -34,6 +36,7 @@ struct BatteryPacket
 
 //Packet to be sent to the core program to select which CAN senders should be relayed to the other programs
 //pktId == -1 clears list of packets
+//Sent when the GUI is used to add more CAN packets to be listened too
 struct CANControlPacket
 {
     int pktId;
@@ -41,6 +44,7 @@ struct CANControlPacket
 };
 
 //Packet for an updated CAN message
+//Sent when the core program receives a CAN message from the cart that has been requested by the GUI program
 struct CANDataPacket
 {
     int pktId;
@@ -68,6 +72,7 @@ enum LoggingControlCode
 };
 
 //Packet to be sent to control the logging program
+//Sent when a button is pressed on the GUI program
 struct LoggingControlPacket
 {
     enum LoggingControlCode code;
