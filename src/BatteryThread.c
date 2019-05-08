@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <time.h>
 
 #include "Packets.h"
 #include "Net.h"
@@ -32,6 +33,7 @@ void* batteryThread(void* args)
         //Fill packet with dummy data
         pkt.cellNum = rand() % 20;
         pkt.charge = rand() % 100 / 100.0;
+        time(&pkt.timestamp);
 
         //Send packet
         if (write(sockfd, &pkt, sizeof(struct BatteryPacket)) != sizeof(struct BatteryPacket))

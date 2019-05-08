@@ -9,6 +9,7 @@
 #include <unistd.h>
 #include <sys/mman.h>
 #include <string.h>
+#include <time.h>
 
 #include <sl/Camera.hpp>
 
@@ -89,6 +90,7 @@ void* cameraThread(void* args)
             //Send UDP packet about updated image
             struct CameraPacket pkt;
             pkt.updated = curImage;
+            time(&pkt.timestamp);
             if (write(sockfd, &pkt, sizeof(struct CameraPacket)) != sizeof(struct CameraPacket))
             {
                 writeDebugMessage("[CAM] Failed to write entire packet");

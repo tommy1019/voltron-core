@@ -18,12 +18,14 @@
 struct DebugPacket
 {
     int strLength;
+    time_t timestamp;
     char str[DEBUG_MAX_LENGTH];
 };
 
 //Temporary battery packet
 struct BatteryPacket
 {
+    time_t timestamp;
     int cellNum;
     float charge;
 };
@@ -40,6 +42,7 @@ struct CANControlPacket
 struct CANDataPacket
 {
     int pktId;
+    time_t timestamp;
     int sender;
     char data[8];
 };
@@ -93,6 +96,7 @@ struct LIDARData
 struct LIDARPacket
 {
     int updated;
+    time_t timestamp;
 };
 
 //Name of shared memory region for camera data
@@ -116,6 +120,7 @@ struct CAMData
 struct CameraPacket
 {
     int updated;
+    time_t timestamp;
 };
 
 #endif

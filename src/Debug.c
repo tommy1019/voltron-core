@@ -4,6 +4,7 @@
 #include <unistd.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
 
 #include "Packets.h"
 #include "Net.h"
@@ -32,6 +33,7 @@ void writeDebugMessage(const char* format, ...)
 
     //Get length of formatted string
     pkt.strLength = strlen(pkt.str);
+    time(&pkt.timestamp);
 
     //Print to stdout
     printf("%s", pkt.str);

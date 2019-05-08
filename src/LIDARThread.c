@@ -10,6 +10,7 @@
 #include <netinet/in.h>
 #include <math.h>
 #include <string.h>
+#include <time.h>
 
 #include "Packets.h"
 #include "Net.h"
@@ -159,6 +160,7 @@ void* lidarThread(void* args)
             //Write packet notifying of full sweep
             struct LIDARPacket pkt;
             pkt.updated = curBlock;
+            time(&pkt.timestamp);
             if (write(sockfd, &pkt, sizeof(struct LIDARPacket)) != sizeof(struct LIDARPacket))
             {
                 writeDebugMessage("[LIDAR] Failed to write entire packet\n");

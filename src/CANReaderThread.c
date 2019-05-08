@@ -14,6 +14,7 @@
 #include <string.h>
 #include <unistd.h>
 #include <stdlib.h>
+#include <time.h>
 
 void* canReaderThread(void* args)
 {
@@ -97,6 +98,7 @@ void* canReaderThread(void* args)
                 //Fill with correct data
                 pkt.pktId = curElement->pkt.pktId;
                 pkt.sender = canID;
+                time(&pkt.timestamp);
                 for (int i = 0; i < 8; i++)
                     pkt.data[i] = frame.data[i];
 
