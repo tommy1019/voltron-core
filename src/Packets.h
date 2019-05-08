@@ -71,7 +71,7 @@ struct LoggingControlPacket
 #define LIDAR_MEMORY_NAME "/voltron_lidar_data"
 
 //Amount of points in one sweep of a LIDAR
-#define LIDAR_DATA_NUM_POINTS 384 * 3 * 16
+#define LIDAR_DATA_NUM_POINTS 384 * 75
 
 //Number of cached LIDAR regions
 #define LIDAR_DATA_NUM_REGIONS 4

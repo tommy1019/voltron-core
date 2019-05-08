@@ -17,9 +17,11 @@
 //Declare methods to be used by C
 extern "C"
 {
+    void* cameraThread(void* args);
+
     void writeDebugMessage(const char* format, ...);
     int createSocket(int port);
-    void* cameraThread(void* args);
+    void* openSharedMemory(char* name, size_t size);
 };
 
 void* cameraThread(void* args)
@@ -41,36 +43,11 @@ void* cameraThread(void* args)
         return NULL;
     }
 
-    size_t dataSize = sizeof(struct CAMData) * CAM_NUM_IMAGES;
-
-    //Open shared memory
-    int fd = shm_open(CAM_MEMORY_NAME, O_RDWR, 0777);
-    if (fd == -1)
+    //Open shared memory to sharedMemory
+    struct CAMData* sharedMemory = openSharedMemory(LIDAR_MEMORY_NAME, sizeof(struct CAMData) * CAM_NUM_IMAGES);
+    if (sharedMemory == NULL)
     {
-        //Create new shared memory if none exists
-        fd = shm_open(CAM_MEMORY_NAME, O_RDWR | O_CREAT, 0777);
-        if (fd == -1)
-        {
-            writeDebugMessage("[CAM] Failed to create shared memory.\n");
-            zed.close();
-            return NULL;
-        }
-
-        //Resize new shared memory to correct size
-        if (ftruncate(fd, dataSize) == -1)
-        {
-            writeDebugMessage("[CAM] Could not resize shared memory to correct size.\n");
-            zed.close();
-            return NULL;
-        }
-    }
-
-    //Map shared memory to sharedMemory
-    struct CAMData* sharedMemory;
-    sharedMemory = (struct CAMData*)mmap(NULL, dataSize, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
-    if (sharedMemory == MAP_FAILED)
-    {
-        writeDebugMessage("[CAM] Could not map shared memory.\n");
+        writeDebugMessage("[CAM] Could not create shared memory.\n");
         zed.close();
         return NULL;
     }

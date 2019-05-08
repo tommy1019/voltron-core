@@ -14,6 +14,7 @@
 #include "Packets.h"
 #include "Net.h"
 #include "Debug.h"
+#include "SharedMem.h"
 
 //Structures to read data from Lidar udp socket
 struct Channel
@@ -54,36 +55,13 @@ void* lidarThread(void* args)
     if (pthread_create(&lidarGPSThreadId, NULL, lidarGPSThread, NULL) != 0)
     {
         writeDebugMessage("[LIDAR] Error: Could not create LIDAR GPS thread thread\n");
+        return NULL;
     }
 
-    //size of shared memory to be opened
-    size_t dataSize = sizeof(struct LIDARData) * LIDAR_DATA_NUM_REGIONS;
-
-    //Open shared memory
-    int fd = shm_open(LIDAR_MEMORY_NAME, O_RDWR, 0777);
-    if (fd == -1)
+    memoryRegions = openSharedMemory(LIDAR_MEMORY_NAME, sizeof(struct LIDARData) * LIDAR_DATA_NUM_REGIONS);
+    if (memoryRegions == NULL)
     {
-        //Create new shared memory if none exists
-        fd = shm_open(LIDAR_MEMORY_NAME, O_RDWR | O_CREAT, 0777);
-        if (fd == -1)
-        {
-            writeDebugMessage("[LIDAR] Failed to create shared memory.\n");
-            return NULL;
-        }
-
-        //Resize new shared memory to correct size
-        if (ftruncate(fd, dataSize) == -1)
-        {
-            writeDebugMessage("[LIDAR] Could not resize shared memory to correct size.\n");
-            return NULL;
-        }
-    }
-
-    //Map shared memory to ram
-    memoryRegions = (struct LIDARData *)mmap(NULL, dataSize, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
-    if (memoryRegions == MAP_FAILED)
-    {
-        writeDebugMessage("[LIDAR] Error: Could not map memory to shared memory\n");
+        writeDebugMessage("[LIDAR] Failed to create shared memory\n");
         return NULL;
     }
 
