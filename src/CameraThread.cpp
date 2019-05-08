@@ -65,10 +65,13 @@ void* cameraThread(void* args)
     //Variable to store which image is currently being written to
     int curImage = 0;
 
+    sl::RuntimeParameters runtime_parameters;
+    runtime_parameters.sensing_mode = sl::SENSING_MODE_FILL;
+
     while(true)
     {
         //Tell zed camera to grab a frame
-        if (zed.grab() == sl::SUCCESS)
+        if (zed.grab(runtime_parameters) == sl::SUCCESS)
         {
             //Mats to store image and depth data
             sl::Mat image;

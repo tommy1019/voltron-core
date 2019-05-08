@@ -41,6 +41,7 @@ void writeDebugMessage(const char* format, ...)
     //Write packet
     if (write(debugSock, &pkt, sizeof(int) + sizeof(time_t) + pkt.strLength) == -1)
     {
+        printf("ERROR: Failed to write debug message\n");
         return;
     }
 }
