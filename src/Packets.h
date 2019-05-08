@@ -1,6 +1,8 @@
 #ifndef PACKETS_H
 #define PACKETS_H
 
+#include <time.h>
+
 //Multicast group for writing/reading packets
 #define MULTICAST_GROUP "224.0.0.155"
 
