@@ -152,12 +152,13 @@ void* canControlThread(void* args)
                 //Clear linked list
                 struct CANList* curElement = head;
 
-                while(curElement->next != NULL)
+                do
                 {
                     struct CANList* nextElement = curElement->next;
                     free(curElement);
                     curElement = nextElement;
                 }
+                while(curElement != NULL);
             }
         }
         else
