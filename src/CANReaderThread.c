@@ -151,6 +151,7 @@ void* canControlThread(void* args)
 
                 //Clear linked list
                 struct CANList* curElement = head;
+                head = NULL;
 
                 do
                 {
