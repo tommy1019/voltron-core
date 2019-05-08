@@ -112,7 +112,7 @@ struct LIDARPacket
 #define CAM_NUM_IMAGES 4
 
 //Structure for holding camera data
-struct CAMData
+struct CameraData
 {
     char rgbImage[CAM_WIDTH * 2][CAM_HEIGHT][4];
     float depth[CAM_WIDTH][CAM_HEIGHT];

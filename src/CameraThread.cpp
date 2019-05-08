@@ -45,7 +45,7 @@ void* cameraThread(void* args)
     }
 
     //Open shared memory to sharedMemory
-    struct CAMData* sharedMemory = (struct CAMData*)openSharedMemory(CAM_MEMORY_NAME, sizeof(struct CAMData) * CAM_NUM_IMAGES);
+    struct CameraData* sharedMemory = (struct CameraData*)openSharedMemory(CAM_MEMORY_NAME, sizeof(struct CameraData) * CAM_NUM_IMAGES);
     if (sharedMemory == NULL)
     {
         writeDebugMessage("[CAM] Could not create shared memory.\n");
