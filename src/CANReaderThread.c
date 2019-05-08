@@ -147,6 +147,8 @@ void* canControlThread(void* args)
         {
             if (head != NULL)
             {
+                writeDebugMessage("[CAN] Clearing CAN codes\n");
+
                 //Clear linked list
                 struct CANList* curElement = head;
 
