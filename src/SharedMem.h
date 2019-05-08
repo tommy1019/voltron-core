@@ -3,6 +3,6 @@
 
 #include <stdlib.h>
 
-void* openSharedMemory(char* name, size_t size);
+void* openSharedMemory(const char* name, size_t size);
 
 #endif

@@ -6,7 +6,7 @@
 
 #include "Debug.h"
 
-void* openSharedMemory(char* name, size_t size)
+void* openSharedMemory(const char* name, size_t size)
 {
     //Open shared memory
     int fd = shm_open(name, O_RDWR, 0777);
