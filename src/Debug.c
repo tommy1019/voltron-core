@@ -39,7 +39,7 @@ void writeDebugMessage(const char* format, ...)
     printf("%s", pkt.str);
 
     //Write packet
-    if (write(debugSock, &pkt, sizeof(int) + pkt.strLength) == -1)
+    if (write(debugSock, &pkt, sizeof(int) + sizeof(time_t) + pkt.strLength) == -1)
     {
         return;
     }

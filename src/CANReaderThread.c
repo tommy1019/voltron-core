@@ -166,6 +166,13 @@ void* canControlThread(void* args)
         {
             //Append to linked list
             struct CANList* newElement = (struct CANList*)malloc(sizeof(struct CANControlPacket));
+
+            if (newElement == NULL)
+            {
+                sem_post(&listLock);
+                continue;
+            }
+
             newElement->pkt = pkt;
             newElement->next = NULL;
 
