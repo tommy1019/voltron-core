@@ -29,6 +29,7 @@ struct BatteryPacket
 };
 
 //Packet to be sent to the core program to select which CAN senders should be relayed to the other programs
+//pktId == -1 clears list of packets
 struct CANControlPacket
 {
     int pktId;

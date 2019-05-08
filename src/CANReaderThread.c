@@ -138,30 +138,48 @@ void* canControlThread(void* args)
             continue;
         }
 
-        //Append to linked list
-        struct CANList* newElement = (struct CANList*)malloc(sizeof(struct CANControlPacket));
-        newElement->pkt = pkt;
-        newElement->next = NULL;
-
         //Get mutex lock for list
         sem_wait(&listLock);
 
-        //Append new element to linked list
-        if (head == NULL)
+        if (pkt.pktId == -1) //Clear list on pktId of -1
         {
-            head = newElement;
+            if (head != NULL)
+            {
+                //Clear linked list
+                struct CANList* curElement = head;
+
+                while(curElement->next != NULL)
+                {
+                    struct CANList* nextElement = curElement->next;
+                    free(curElement);
+                    curElement = nextElement;
+                }
+            }
         }
         else
         {
-            struct CANList* curElement = head;
+            //Append to linked list
+            struct CANList* newElement = (struct CANList*)malloc(sizeof(struct CANControlPacket));
+            newElement->pkt = pkt;
+            newElement->next = NULL;
 
-            while(curElement->next != NULL)
-                curElement = curElement->next;
+            //Append new element to linked list
+            if (head == NULL)
+            {
+                head = newElement;
+            }
+            else
+            {
+                struct CANList* curElement = head;
 
-            curElement->next = newElement;
+                while(curElement->next != NULL)
+                    curElement = curElement->next;
+
+                curElement->next = newElement;
+            }
+
+            writeDebugMessage("[CAN] Registered new CAN listener id: %i, sender: %#010x\n", newElement->pkt.pktId, newElement->pkt.sender);
         }
-
-        writeDebugMessage("[CAN] Registered new CAN listener id: %i, sender: %#010x\n", newElement->pkt.pktId, newElement->pkt.sender);
 
         //Relese lock on list
         sem_post(&listLock);
