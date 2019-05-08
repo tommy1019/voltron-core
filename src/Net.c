@@ -42,14 +42,17 @@ int createReadSocket(int port)
 {
     //Create socket for reading
     int sockfd;
-    if ((sockfd = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP)) < 0)
+    if ((sockfd = socket(AF_INET, SOCK_DGRAM, 0)) < 0)
     {
         return -1;
     }
 
     //Set reuse port so others can read on the selected port
     int one = 1;
-    setsockopt(sockfd, SOL_SOCKET, SO_REUSEPORT, &one, sizeof(one));
+    if (setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR, &one, sizeof(one)) < 0)
+        return -1;
+    if (setsockopt(sockfd, SOL_SOCKET, SO_REUSEPORT, &one, sizeof(one)) < 0)
+        return -1;
 
     //Create address to read on
     struct sockaddr_in addr;
