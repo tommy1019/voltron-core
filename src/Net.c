@@ -30,7 +30,7 @@ int createSocket(int port)
     }
 
     //Connect the socket for writing on the multicast loopback interface
-    if (connect(sockfd, (const struct sockaddr *)&groupSock, sizeof(groupSock)))
+    if (connect(sockfd, (struct sockaddr *)&groupSock, sizeof(groupSock)))
     {
         return -1;
     }
@@ -42,7 +42,7 @@ int createReadSocket(int port)
 {
     //Create socket for reading
     int sockfd;
-    if ((sockfd = socket(AF_INET, SOCK_DGRAM, 0)) < 0)
+    if ((sockfd = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP)) < 0)
     {
         return -1;
     }
@@ -58,11 +58,11 @@ int createReadSocket(int port)
     struct sockaddr_in addr;
     memset(&addr, 0, sizeof(addr));
     addr.sin_family = AF_INET;
-    addr.sin_addr.s_addr = INADDR_ANY;
+    addr.sin_addr.s_addr = htonl(INADDR_ANY);
     addr.sin_port = htons(port);
 
     //Bind the socket to the address
-    if (bind(sockfd, (const struct sockaddr *)&addr, sizeof(addr)) < 0)
+    if (bind(sockfd, (struct sockaddr *)&addr, sizeof(addr)) < 0)
     {
         return -1;
     }

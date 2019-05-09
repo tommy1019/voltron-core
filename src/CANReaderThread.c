@@ -165,7 +165,7 @@ void* canControlThread(void* args)
         else
         {
             //Append to linked list
-            struct CANList* newElement = (struct CANList*)malloc(sizeof(struct CANControlPacket));
+            struct CANList* newElement = (struct CANList*)malloc(sizeof(struct CANList));
 
             if (newElement == NULL)
             {

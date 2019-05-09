@@ -220,6 +220,6 @@ void* lidarGPSThread(void* args)
         recv(soc, &gpsPacket, sizeof(struct GPSPacket), MSG_WAITALL);
 
         //Print GPS data to debug stream. TODO: Create channel for GPS data
-        writeDebugMessage("GPS: %s\n", gpsPacket.gpsString);
+        //writeDebugMessage("GPS: %s\n", gpsPacket.gpsString);
     }
 }
